@@ -8,7 +8,6 @@ class GameList extends React.Component {
         super(props);
         this.state = { error: null, gamelist: [], isLoaded: false, 
             gameSeries: this.props.match.params.gname, amiiboSeries: this.props.match.params.aname, fulllist: []};
-        this.retGameList = this.retGameList.bind(this);
         this.GameSeriesHandler = this.GameSeriesHandler.bind(this);
         this.AmiiboSeriesHandler = this.AmiiboSeriesHandler.bind(this);
     }
@@ -127,13 +126,6 @@ class GameList extends React.Component {
         //     return;
         // }
         this.setState({ gamelist: list });
-    }
-    retGameList() {
-        // var originalArray = this.state.gamelist;
-        // var prop = "name";
-        
-        // this.setState(gamelist : originalArray.; 
-
     }
 
 }
