@@ -2,6 +2,6 @@
 // import ReactDOM from 'react-dom';
 var React = require('react');
 var ReactDOM = require('react-dom');
-var GameList = require('./gameItem');
+var App = require('./gameItem');
 
-ReactDOM.render(<GameList /> ,document.getElementById('gameItem'));
+ReactDOM.render(<App /> ,document.getElementById('gameItem'));

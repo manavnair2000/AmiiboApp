@@ -1,17 +1,27 @@
 var React = require('react');
+import {  BrowserRouter as Router, Route,  Link ,BrowserHistory, Switch} from 'react-router-dom';
 var GameSeriesFilter = require('./gameSeriesFilter');
 var AmiiboSeriesFilter = require('./amiiboSeriesFilter');
+
 class GameList extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { error: null, gamelist: [], isLoaded: false, gameSeries: "", amiiboSeries: "", fulllist: []};
+        this.state = { error: null, gamelist: [], isLoaded: false, 
+            gameSeries: this.props.match.params.gname, amiiboSeries: this.props.match.params.aname, fulllist: []};
         this.retGameList = this.retGameList.bind(this);
         this.GameSeriesHandler = this.GameSeriesHandler.bind(this);
         this.AmiiboSeriesHandler = this.AmiiboSeriesHandler.bind(this);
     }
     componentDidMount() {
-
-        fetch("https://www.amiiboapi.com/api/amiibo")
+        var url = "https://www.amiiboapi.com/api/amiibo/" ;
+        if(this.state.amiiboSeries){
+            url += "?amiiboSeries=" + encodeURI(this.state.amiiboSeries);
+        }
+        if(this.state.gameSeries){
+            url += "?gameseries=" + encodeURI(this.state.gameSeries);
+        }
+        console.log(url);
+        fetch(url)
             .then(res => res.json())
             .then(
                 (result) => {
@@ -34,14 +44,14 @@ class GameList extends React.Component {
             )
     }
     render() {
-        const { error, items, isLoaded } = this.state;
+        const { error, gamelist, isLoaded } = this.state;
         if (error) {
             return (<div>Error: {error.message}</div>);
         } else if (!isLoaded) {
             return (<div>Loading...</div>);
         } else {
             return (
-                <div>
+            <div>
 
                 <div className="row" >
                 <div className="input-field col s12 l4" id="filterGameSeries">
@@ -50,13 +60,18 @@ class GameList extends React.Component {
                 <div className="input-field col s12 l4 " id="filterAmiiboSeries">
                     <AmiiboSeriesFilter Filter={this.AmiiboSeriesHandler} />
                 </div>
-            </div>
+                <div className="input-field col s12 l3 ">
+                    <br/>
+                        <a href="" onClick="function(e){e.preventDefault(); location.reload();}" class="waves-effect waves-light btn"><i class="material-icons left">clear</i>Clear Filter</a>
+                </div>
+                </div>
+                
             <center>
                 <div className="row">
-                    <div className="col s12 l6" id="gamelist">
+                    <div className="col s12 l6 push-l1" id="gamelist">
                             <div>
                                 <ul className="collection">
-                                        {this.state.gamelist.sort(function (a, b) {
+                                        {(gamelist.length == 0) ? <h3>No Results </h3> :gamelist.sort(function (a, b) {
                                             let comparison = 0;
                                             if (a.name > b.name)
                                                 comparison = 1;
@@ -67,8 +82,8 @@ class GameList extends React.Component {
                                         return <li key={index} className="collection-item avatar" key={item.key} value={item.name}>
                                             <img src={item.image} alt={item.character} className="circle" />
                                             <span className="title"></span>{item.name}
-                                            <p> Amiibo Series : <a href="http://" >{item.amiiboSeries}</a> <br />
-                                Game Series: <a href="#">{item.gameSeries} </a>
+                                            <p> Amiibo Series : <Link to={`/aseries/${item.amiiboSeries}`} >{item.amiiboSeries}</Link> <br />
+                                Game Series: <Link to={`/gseries/${item.gameSeries}`} >{item.gameSeries}</Link>
                                             </p>
                                         </li>
                                     })}
@@ -87,28 +102,30 @@ class GameList extends React.Component {
         var list = this.state.gamelist.filter(function(val){ 
             return item == val.gameSeries;
         });
-        if(list.length == 0){
-            document.getElementById('aseries').selectedIndex = 0;
-            list = this.state.fulllist.filter(function (val) {
-                return item == val.gameSeries;
-            });
-            this.setState({ gamelist: list });
-            return;
-        }
+        //Code to reset the other filter if no common game is there
+        // if(list.length == 0){
+        //     document.getElementById('aseries').selectedIndex = 0;
+        //     list = this.state.fulllist.filter(function (val) {
+        //         return item == val.gameSeries;
+        //     });
+        //     this.setState({ gamelist: list });
+        //     return;
+        // }
         this.setState({gamelist : list});
     }
     AmiiboSeriesHandler(item) {
         var list = this.state.gamelist.filter(function (val) {
             return item == val.amiiboSeries;
         });
-        if (list.length == 0) {
-            document.getElementById('gseries').selectedIndex = 0;
-            list = this.state.fulllist.filter(function (val) {
-                return item == val.amiiboSeries;
-            });
-            this.setState({ gamelist: list });
-            return;
-        }
+        //Code to reset the other filter if no common game is there
+        // if (list.length == 0) {
+        //     document.getElementById('gseries').selectedIndex = 0;
+        //     list = this.state.fulllist.filter(function (val) {
+        //         return item == val.amiiboSeries;
+        //     });
+        //     this.setState({ gamelist: list });
+        //     return;
+        // }
         this.setState({ gamelist: list });
     }
     retGameList() {
@@ -120,4 +137,16 @@ class GameList extends React.Component {
     }
 
 }
-module.exports = GameList;
+class App extends React.Component {
+    render() {
+        return (
+            
+            <Router history={BrowserHistory}>
+                <Route exact path={"/"} component={GameList} />
+                <Route exact path={"/aseries/:aname"} component={GameList} />
+                <Route exact path={"/gseries/:gname"} component={GameList} />
+            </Router>
+        );
+    }
+}
+module.exports = App;
