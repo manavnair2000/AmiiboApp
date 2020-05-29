@@ -10,6 +10,7 @@ class GameList extends React.Component {
             gameSeries: this.props.match.params.gname, amiiboSeries: this.props.match.params.aname, fulllist: []};
         this.GameSeriesHandler = this.GameSeriesHandler.bind(this);
         this.AmiiboSeriesHandler = this.AmiiboSeriesHandler.bind(this);
+        this.clearFilter = this.clearFilter.bind(this);
     }
     componentDidMount() {
         var url = "https://www.amiiboapi.com/api/amiibo/" ;
@@ -61,7 +62,7 @@ class GameList extends React.Component {
                 </div>
                 <div className="input-field col s12 l3 ">
                     <br/>
-                        <a href="" onClick="function(e){e.preventDefault(); location.reload();}" class="waves-effect waves-light btn"><i class="material-icons left">clear</i>Clear Filter</a>
+                        <button onClick={this.clearFilter} className="waves-effect waves-light btn"><i className="material-icons left">clear</i>Clear Filter</button>
                 </div>
                 </div>
                 
@@ -102,30 +103,54 @@ class GameList extends React.Component {
             return item == val.gameSeries;
         });
         //Code to reset the other filter if no common game is there
-        // if(list.length == 0){
-        //     document.getElementById('aseries').selectedIndex = 0;
-        //     list = this.state.fulllist.filter(function (val) {
-        //         return item == val.gameSeries;
-        //     });
-        //     this.setState({ gamelist: list });
-        //     return;
-        // }
+        if(list.length == 0){
+            
+            list = this.state.fulllist.filter(function (val) {
+                return item == val.gameSeries;
+            });
+            var ele = document.getElementById('aseries').value;
+            if (document.getElementById('aseries').selectedIndex != 0) {
+                
+                list = list.filter(function (val) {
+                    return item == val.amiiboSeries;
+                });
+            }
+            if(list.length != 0)
+                document.getElementById('aseries').selectedIndex = 0;
+            this.setState({ gamelist: list });
+            return;
+        }
         this.setState({gamelist : list});
     }
     AmiiboSeriesHandler(item) {
         var list = this.state.gamelist.filter(function (val) {
             return item == val.amiiboSeries;
         });
+        
         //Code to reset the other filter if no common game is there
-        // if (list.length == 0) {
-        //     document.getElementById('gseries').selectedIndex = 0;
-        //     list = this.state.fulllist.filter(function (val) {
-        //         return item == val.amiiboSeries;
-        //     });
-        //     this.setState({ gamelist: list });
-        //     return;
-        // }
+        if (list.length == 0) {
+            list = this.state.fulllist.filter(function (val) {
+                return item == val.amiiboSeries;
+            });
+            var ele = document.getElementById('gseries').value;
+            if (document.getElementById('gseries').selectedIndex != 0){
+                
+                list = list.filter(function (val) {
+                    return item == val.gameSeries;
+                });
+            }
+            if(list.length != 0)
+                document.getElementById('gseries').selectedIndex = 0;
+            this.setState({ gamelist: list });
+            return;
+        }
         this.setState({ gamelist: list });
+    }
+    clearFilter(){
+        var fulllist = this.state.fulllist;
+        this.setState({gamelist : fulllist});
+        document.getElementById('gseries').selectedIndex = 0;
+        document.getElementById('aseries').selectedIndex = 0;
     }
 
 }
