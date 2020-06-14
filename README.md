@@ -1,5 +1,4 @@
 # SchooglinkAmiiboApp
-## Task Completed
 * The App does the following:
     * The app lists all amiibo with their name, image, amiibo series and Game series the amiibo is linked to. 
     * Clicking on game series name should open a page to list all amiibo in that game series with their name, image, amiibo series. 
