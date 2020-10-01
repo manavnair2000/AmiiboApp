@@ -29,6 +29,7 @@ module.exports = {
         inline : true,
         hot : true,
         port : 9000,
-        historyApiFallback: true
+        historyApiFallback: true,
+        host : '0.0.0.0'
     }
 };
